@@ -2,10 +2,22 @@
 
 import os
 import requests
-from subprocess import check_output
+import subprocess
 import urllib.request
 import wget
 from zipfile import ZipFile
+
+def run(command, output=1):
+  proc = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  if output == 1:
+    while proc.poll() is None:
+      print(proc.stdout.readline())
+  commandResult = proc.wait()
+  if commandResult == 0:
+    return True
+  else:
+    print("\nERROR")
+    exit()
 
 def print_seperator():
   print()
@@ -33,7 +45,7 @@ def get_changelog(version):
   temp = open(file, "r")
   for line in temp:
     print(line)
-  os.system("rm " + file)
+  run("rm " + file, 0)
 
 def is_a_valid_version(version):
   if version in valid_versions:
@@ -47,14 +59,13 @@ def get_next_version(current_version):
   try:
     return valid_versions[index+1]
   except:
-    os.system("rm valid-versions.txt")
+    run("rm valid-versions.txt", 0)
     print("ShadityOS is up to date!")
     print()
     exit()
 
 
 def patch(version_to_patch):
-  print(version_to_patch)
   version = get_next_version(version_to_patch)
   get_changelog(version)
   print_seperator()
@@ -81,13 +92,13 @@ def install_patch(version):
   print_seperator()
   print("Installing Patch...")
   print()
-  os.system("rm " + file)
-  os.system("sh patch.sh")
+  run("rm " + file)
+  run("sh patch.sh")
   print_seperator()
   print("Cleaning Up...")
   print()
-  os.system("rm -r media")
-  os.system("rm patch.sh")
+  run("rm -r media")
+  run("rm patch.sh")
   with open("/home/pi/.config/version.txt") as f:
     lines = f.readlines()
   lines[0] = version
@@ -98,4 +109,4 @@ def install_patch(version):
 init()
 
 patch(version)
-os.system("rm valid-versions.txt")
+run("rm valid-versions.txt", 0)
