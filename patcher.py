@@ -11,7 +11,9 @@ def run(command, output=1):
   proc = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
   if output == 1:
     while proc.poll() is None:
-      print(proc.stdout.readline())
+      temp = str(proc.stdout.readline()).split("'")
+      temp = temp[1].split("\\")
+      print(temp[0])
   commandResult = proc.wait()
   if commandResult == 0:
     return True
