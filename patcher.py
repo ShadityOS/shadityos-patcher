@@ -2,10 +2,24 @@
 
 import os
 import requests
-from subprocess import check_output
+import subprocess
 import urllib.request
 import wget
 from zipfile import ZipFile
+
+def run(command, output=1):
+  proc = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  if output == 1:
+    while proc.poll() is None:
+      temp = str(proc.stdout.readline()).split("'")
+      temp = temp[1].split("\\")
+      print(temp[0])
+  commandResult = proc.wait()
+  if commandResult == 0:
+    return True
+  else:
+    print("\nERROR")
+    exit()
 
 def print_seperator():
   print()
@@ -16,12 +30,7 @@ def print_seperator():
 def init():
   print("Initializing:")
   global version, valid_versions
-  temp = str(check_output(["lsb_release", "-sr"]))
-  temp = temp.split("\\")
-  temp = temp.pop(0)
-  temp = temp.split("'")
-  temp = temp.pop(1)
-  version = str(temp)
+  version = str(open("/home/pi/.config/version.txt", "r").readline())
   print("Retrieving valid-versions.txt...")
   wget.download("https://raw.githubusercontent.com/ShadityOS/patches/master/valid-versions.txt")
   file = open("valid-versions.txt", "r")
@@ -30,21 +39,15 @@ def init():
   print_seperator()
 
 def get_changelog(version):
-  try:
-    url = "https://raw.githubusercontent.com/ShadityOS/patches/master/v" + version + "-changelog.txt"
-  except:
-    os.system("rm valid-versions.txt")
-    print("ShadityOS is up to date!")
-    print()
-    exit()
-  file = "v" + version + "-changelog.txt"
+  url = "https://raw.githubusercontent.com/ShadityOS/patches/master/v" + str(version) + "-changelog.txt"
+  file = "v" + str(version) + "-changelog.txt"
   print("Retrieving changelog at: " + url)
   wget.download(url)
   print_seperator()
   temp = open(file, "r")
   for line in temp:
     print(line)
-  os.system("rm " + file)
+  run("rm " + file, 0)
 
 def is_a_valid_version(version):
   if version in valid_versions:
@@ -54,11 +57,15 @@ def is_a_valid_version(version):
 
 def get_next_version(current_version):
   version_before = False
-  for item in valid_versions:
-    if version_before == True:
-      return item
-    if item == current_version:
-      version_before = True
+  index = valid_versions.index(current_version.rstrip())
+  try:
+    return valid_versions[index+1]
+  except:
+    run("rm valid-versions.txt", 0)
+    print("ShadityOS is up to date!")
+    print()
+    exit()
+
 
 def patch(version_to_patch):
   version = get_next_version(version_to_patch)
@@ -70,7 +77,7 @@ def patch(version_to_patch):
     if value.lower() == "n":
       print("Upgrade Aborted.")
     else:
-      install_patch(version) 
+      install_patch(version)
   else:
     print("Patch seems to be non-existant!")
 
@@ -87,16 +94,21 @@ def install_patch(version):
   print_seperator()
   print("Installing Patch...")
   print()
-  os.system("rm " + file)
-  os.system("sh patch.sh")
+  run("rm " + file)
+  run("sh patch.sh")
   print_seperator()
   print("Cleaning Up...")
   print()
-  os.system("rm -r media")
-  os.system("rm patch.sh")
+  run("rm -r media")
+  run("rm patch.sh")
+  with open("/home/pi/.config/version.txt") as f:
+    lines = f.readlines()
+  lines[0] = version
+  with open("/home/pi/.config/version.txt", "w") as f:
+    f.writelines(lines)
   print("ShadityOS Patched Successfully!")
 
 init()
 
 patch(version)
-os.system("rm valid-versions.txt")
+run("rm valid-versions.txt", 0)
