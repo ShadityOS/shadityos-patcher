@@ -1,4 +1,4 @@
-# ShadityOS Patcher - (BETA)
+# ShadityOS Patcher - (TESTING)
 A patcher software that upgrades ShadityOS so you don't have to reinstall it!
 ## Plans for ShadityOS Patcher
 ShadityOS Patcher has plans to come out in ShadityOS v1.2.0 or v1.3.0
