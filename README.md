@@ -11,7 +11,7 @@ ShadityOS Patcher has plans to come out in ShadityOS v1.2.0 or v1.3.0
 ## Installing
 ShadityOS-patcher is very easy to install. Simply run this command to install:
 ```
-git clone https://github.com/ShadityOS/shadityos-patcher.git && cd shadityos-patcher $HOME && sudo sh setup.sh
+git clone https://github.com/ShadityOS/shadityos-patcher.git $HOME && cd $HOME/shadityos-patcher && sudo sh setup.sh
 ```
 And to uninstall, run this:
 ```
