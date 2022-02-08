@@ -6,7 +6,6 @@ ShadityOS Patcher has plans to come out in ShadityOS v1.2.0 or v1.3.0
 - [x] Create the the patcher itself (Uploaded as of 19/06/2022)
 - [x] Add patches for different versions  (https://github.com/ShadityOS/patches)
 - [ ] Include in ShadityOS itself at some point
-- [x] Work on getting it out of BETA
 - [ ] Work on getting it out of TESTING
 
 ## Installing
